@@ -14,6 +14,17 @@ provider "aws" {
     region = "${var.aws_region}"
 }
 
+resource "aws_elb" "associated_elb" {
+  name = "${var.elb_name}"
+  availability_zones = "${var.availability_zones}"
+  listener = "${var.elb_listener}"
+  health_check = "${var.health_check}"
+  cross_zone_load_balancing = true
+  idle_timeout = "${var.idle_timeout}"
+  connection_draining = "${var.connection_draining}"
+  connection_draining_timeout = "${var.connection_draining_timeout}"
+}
+
 resource "aws_launch_configuration" "launch_config" {
     name = "${var.lc_name}"
     image_id = "${var.ami_id}"
@@ -42,5 +53,5 @@ resource "aws_autoscaling_group" "main_asg" {
   desired_capacity = "${var.asg_number_of_instances}"
   health_check_grace_period = "${var.health_check_grace_period}"
   health_check_type = "${var.health_check_type}"
-  load_balancers = ["${var.load_balancer_name}"]
+  load_balancers = "${var.elb_name}"
 }
